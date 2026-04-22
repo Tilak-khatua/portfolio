@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//mnt/c/brainrot/**)",
+      "Read(//mnt/c/brainrot/conversql/**)",
+      "Bash(npx tsc *)",
+      "WebFetch(domain:chkstepan.com)",
+      "Bash(npm install *)"
+    ]
+  }
+}
