@@ -1,28 +1,47 @@
 import { useState } from 'react'
-import Loader   from './components/Loader'
-import Nav      from './components/Nav'
-import Hero     from './components/Hero'
-import Marquee  from './components/Marquee'
-import Projects from './components/Projects'
-import About    from './components/About'
-import Contact  from './components/Contact'
-import Footer   from './components/Footer'
+import { useLenis } from './hooks/useLenis'
+import { useReducedMotion } from './hooks/useReducedMotion'
+import BootSequence from './components/boot/BootSequence'
+import Nav from './components/layout/Nav'
+import Hero from './components/hero/Hero'
+import WorkGallery from './components/work/WorkGallery'
+import Rotation from './components/rotation/Rotation'
+import About from './components/about/About'
+import Contact from './components/contact/Contact'
+import RotatingTag from './components/layout/RotatingTag'
 
 export default function App() {
-  const [loaded, setLoaded] = useState(false)
+  const reduced = useReducedMotion()
+  const [booted, setBooted] = useState(false)
 
+  useLenis()
+
+  const handleBootDone = () => setBooted(true)
 
   return (
     <>
-      {!loaded && <Loader onDone={() => setLoaded(true)} />}
-      <div style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.3s' }}>
+      <div className="scanlines" aria-hidden />
+      <div className="grain" aria-hidden />
+      <div className="vignette" aria-hidden />
+
+      {!booted && !reduced && <BootSequence onDone={handleBootDone} />}
+
+      <div style={{ opacity: booted ? 1 : 0, transition: 'opacity 300ms ease' }}>
         <Nav />
-        <Hero ready={loaded} />
-        <Marquee />
-        <Projects />
-        <About />
-        <Contact />
-        <Footer />
+        <main>
+          <Hero />
+          <WorkGallery />
+          <Rotation />
+          <About />
+          <Contact />
+          <footer className="site-footer mono">
+            <div className="site-footer-inner">
+              <span>© {new Date().getFullYear()} tilak khatua</span>
+              <RotatingTag />
+              <span>v2.0.tilak.os</span>
+            </div>
+          </footer>
+        </main>
       </div>
     </>
   )

@@ -1,0 +1,102 @@
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  background: linear-gradient(180deg, rgba(18, 18, 28, 0.92), rgba(18, 18, 28, 0.72));
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 12px;
+}
+.nav-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 10px 20px;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.nav-dot {
+  width: 10px; height: 10px;
+  background: var(--hot);
+  border: 1px solid #000;
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.3);
+}
+.nav-sep { opacity: 0.4; }
+.nav-path { color: var(--cyan); }
+.nav-items {
+  display: flex;
+  gap: 2px;
+  margin-left: 16px;
+}
+.nav-item {
+  padding: 6px 12px;
+  color: #fff;
+  opacity: 0.75;
+  letter-spacing: 0.04em;
+  transition: opacity 150ms, background 150ms;
+  border-radius: 2px;
+}
+.nav-item:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--hot);
+}
+.nav-meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0.8;
+}
+.nav-status {
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 6px var(--lime);
+  animation: nav-pulse 2s ease-in-out infinite;
+}
+@keyframes nav-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.nav-burger {
+  display: none;
+  font-size: 22px;
+  margin-left: auto;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+@media (max-width: 880px) {
+  .nav-meta { display: none; }
+  .nav-burger { display: block; }
+  .nav-items {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: rgba(10, 10, 18, 0.98);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 220ms var(--ease-out);
+  }
+  .nav-items.open { max-height: 320px; }
+  .nav-item {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 0;
+  }
+  .nav-path { display: none; }
+}
