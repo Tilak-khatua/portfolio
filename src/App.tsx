@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLenis } from './hooks/useLenis'
 import { useReducedMotion } from './hooks/useReducedMotion'
 import BootSequence from './components/boot/BootSequence'
@@ -12,11 +12,29 @@ import RotatingTag from './components/layout/RotatingTag'
 
 export default function App() {
   const reduced = useReducedMotion()
-  const [booted, setBooted] = useState(false)
+  const [bootVisible, setBootVisible] = useState(true)
+  const [revealed, setRevealed] = useState(false)
 
   useLenis()
 
-  const handleBootDone = () => setBooted(true)
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+    window.scrollTo(0, 0)
+    if (revealed || reduced) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [revealed, reduced])
+
+  const handleBreak = () => {
+    window.scrollTo(0, 0)
+    setRevealed(true)
+  }
+  const handleBootDone = () => setBootVisible(false)
 
   return (
     <>
@@ -24,12 +42,14 @@ export default function App() {
       <div className="grain" aria-hidden />
       <div className="vignette" aria-hidden />
 
-      {!booted && !reduced && <BootSequence onDone={handleBootDone} />}
+      {bootVisible && !reduced && (
+        <BootSequence onBreak={handleBreak} onDone={handleBootDone} />
+      )}
 
-      <div style={{ opacity: booted ? 1 : 0, transition: 'opacity 300ms ease' }}>
+      <div style={{ opacity: revealed || reduced ? 1 : 0, transition: 'opacity 250ms ease' }}>
         <Nav />
         <main>
-          <Hero />
+          <Hero booted={revealed || reduced} />
           <WorkGallery />
           <Rotation />
           <About />

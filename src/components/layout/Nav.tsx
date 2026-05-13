@@ -5,7 +5,6 @@ import './nav.css'
 const ITEMS = [
   { id: 'home', label: 'home' },
   { id: 'work', label: 'work' },
-  { id: 'play', label: 'play' },
   { id: 'about', label: 'about' },
   { id: 'contact', label: 'contact' },
 ]
