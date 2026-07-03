@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { useReducedMotion } from '../../hooks/useReducedMotion'
 import './boot.css'
@@ -8,169 +8,89 @@ type Props = {
   onDone: () => void
 }
 
-const LINES = [
-  'tilak.os — bios v2.26',
-  'CPU ............ vibes, clocked too fast',
-  'MEMORY ......... enough to forget your name',
-  'GPU ............ borrowed from 2003',
-  '',
-  'loading TILAK.SYS',
-  'decompressing personality.pak',
-  'mounting /work, /about, /contact ... ok',
-  'warming up pixel cursor ... ok',
-  '',
-  'ready. press any key to continue.',
-]
+const PANELS = [0, 1, 2, 3]
 
 export default function BootSequence({ onBreak, onDone }: Props) {
   const reduced = useReducedMotion()
-  const [lineIdx, setLineIdx] = useState(0)
-  const [charIdx, setCharIdx] = useState(0)
-  const [ready, setReady] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const screenRef = useRef<HTMLDivElement>(null)
-  const caretRef = useRef<HTMLSpanElement>(null)
-  const barRef = useRef<HTMLDivElement>(null)
-  const leavingRef = useRef(false)
+  const countRef = useRef<HTMLDivElement>(null)
+  const onBreakRef = useRef(onBreak)
+  const onDoneRef = useRef(onDone)
+  onBreakRef.current = onBreak
+  onDoneRef.current = onDone
 
   useEffect(() => {
     if (reduced) {
-      onBreak()
-      onDone()
+      onBreakRef.current()
+      onDoneRef.current()
     }
-  }, [reduced, onBreak, onDone])
+  }, [reduced])
 
   useEffect(() => {
     if (reduced) return
-    let timer: number
-    if (lineIdx >= LINES.length) {
-      setReady(true)
-      return
-    }
-    const line = LINES[lineIdx]
-    if (line === '') {
-      timer = window.setTimeout(() => {
-        setLineIdx((i) => i + 1)
-        setCharIdx(0)
-      }, 120)
-      return () => clearTimeout(timer)
-    }
-    if (charIdx < line.length) {
-      timer = window.setTimeout(() => setCharIdx((c) => c + 1), 18)
-    } else {
-      timer = window.setTimeout(() => {
-        setLineIdx((i) => i + 1)
-        setCharIdx(0)
-      }, 120)
-    }
-    return () => clearTimeout(timer)
-  }, [lineIdx, charIdx, reduced])
+    const root = rootRef.current
+    const screen = screenRef.current
+    const countEl = countRef.current
+    if (!root || !screen || !countEl) return
 
-  useEffect(() => {
-    if (reduced) return
-    const startCut = () => {
-      if (!ready || leavingRef.current) return
-      if (!barRef.current || !rootRef.current || !caretRef.current) return
-      leavingRef.current = true
-      runCut()
+    const panels = root.querySelectorAll<HTMLElement>('.boot-panel')
+    const counter = { value: 0 }
+    let leaving = false
+
+    const tl = gsap.timeline({ onComplete: () => onDoneRef.current() })
+
+    tl.to(counter, {
+      value: 100,
+      duration: 1.6,
+      ease: 'power2.inOut',
+      onUpdate: () => {
+        countEl.textContent = String(Math.round(counter.value)).padStart(3, '0')
+      },
+    })
+
+    tl.addLabel('exit', '+=0.25')
+    tl.call(() => onBreakRef.current(), undefined, 'exit')
+    tl.to(screen, { opacity: 0, duration: 0.25, ease: 'power1.out' }, 'exit')
+    tl.to(
+      panels,
+      {
+        yPercent: -100,
+        duration: 0.7,
+        ease: 'expo.inOut',
+        stagger: 0.07,
+      },
+      'exit+=0.1',
+    )
+
+    const skip = () => {
+      if (leaving || tl.currentLabel() === 'exit' || tl.labels.exit <= tl.time()) return
+      leaving = true
+      countEl.textContent = '100'
+      tl.play('exit')
     }
-    const onKey = (e: KeyboardEvent) => {
-      if (!ready) return
-      e.preventDefault()
-      startCut()
-    }
-    const onPointer = () => startCut()
-    window.addEventListener('keydown', onKey)
-    window.addEventListener('click', onPointer)
-    window.addEventListener('touchstart', onPointer)
+    window.addEventListener('keydown', skip)
+    window.addEventListener('pointerdown', skip)
     return () => {
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('click', onPointer)
-      window.removeEventListener('touchstart', onPointer)
+      window.removeEventListener('keydown', skip)
+      window.removeEventListener('pointerdown', skip)
+      tl.kill()
     }
-  }, [ready, reduced])
-
-  const runCut = () => {
-    const bar = barRef.current!
-    const root = rootRef.current!
-    const caretEl = caretRef.current!
-    const screen = screenRef.current!
-
-    const rect = caretEl.getBoundingClientRect()
-    caretEl.style.visibility = 'hidden'
-
-    const state = {
-      barX: rect.left,
-      barY: rect.top,
-      barH: Math.max(rect.height, 18),
-    }
-    bar.style.opacity = '1'
-    bar.style.top = `${state.barY}px`
-    bar.style.height = `${state.barH}px`
-    bar.style.transform = `translateX(${state.barX}px)`
-
-    const tl = gsap.timeline({ onComplete: () => onDone() })
-
-    // Phase 1: caret shoots to left edge, stretches to full viewport height.
-    tl.to(state, {
-      barX: 0,
-      barY: 0,
-      barH: window.innerHeight,
-      duration: 0.4,
-      ease: 'expo.inOut',
-      onUpdate: () => {
-        bar.style.transform = `translateX(${state.barX}px)`
-        bar.style.top = `${state.barY}px`
-        bar.style.height = `${state.barH}px`
-      },
-    })
-
-    // Boot text dims out behind the bar.
-    tl.to(screen, { opacity: 0, duration: 0.2, ease: 'power1.out' }, '<0.1')
-
-    // Start revealing the hero while the sweep is about to begin.
-    tl.call(() => onBreak())
-
-    // Phase 2: bar sweeps right; boot clips with the bar's edge.
-    tl.to(state, {
-      barX: window.innerWidth + 12,
-      duration: 0.7,
-      ease: 'power3.inOut',
-      onUpdate: () => {
-        bar.style.transform = `translateX(${state.barX}px)`
-        root.style.clipPath = `inset(0 0 0 ${state.barX}px)`
-      },
-    })
-
-    // Phase 3: bar exits.
-    tl.to(bar, { opacity: 0, duration: 0.18, ease: 'power2.out' })
-  }
+  }, [reduced])
 
   if (reduced) return null
 
   return (
-    <>
-      <div ref={rootRef} className="boot" role="dialog" aria-label="Boot sequence">
-        <div ref={screenRef} className="boot-screen">
-          <div className="boot-lines">
-            {LINES.slice(0, lineIdx).map((l, i) => (
-              <div key={i} className="boot-line">{l || ' '}</div>
-            ))}
-            {lineIdx < LINES.length && (
-              <div className="boot-line">
-                {LINES[lineIdx].slice(0, charIdx)}
-                <span className="boot-caret">▋</span>
-              </div>
-            )}
-            {ready && (
-              <div className="boot-line boot-press">
-                <span ref={caretRef} className="boot-blink">▋</span> press any key
-              </div>
-            )}
-          </div>
-        </div>
+    <div ref={rootRef} className="boot" role="dialog" aria-label="Loading">
+      <div className="boot-panels" aria-hidden>
+        {PANELS.map((i) => (
+          <div key={i} className="boot-panel" />
+        ))}
       </div>
-      <div ref={barRef} className="boot-cut-bar" aria-hidden />
-    </>
+      <div ref={screenRef} className="boot-screen">
+        <div className="boot-label mono">tilak khatua — portfolio</div>
+        <div ref={countRef} className="boot-count mono">000</div>
+      </div>
+    </div>
   )
 }
