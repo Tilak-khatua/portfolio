@@ -43,6 +43,7 @@ export const projects: Project[] = [
     problem: 'ML models are confidently wrong at the worst times. Teams either eat the errors or manually review everything — there\'s rarely a middle path that routes only the uncertain cases to humans and feeds their answers back into training.',
     process: 'Built a full review pipeline: predictions arrive via a Python SDK, a configurable router auto-approves high-confidence ones and queues the rest (low confidence, high uncertainty, edge cases, 5% random sample) for human review in a React UI. Multi-annotator consensus with Cohen\'s kappa; disagreements on critical tasks escalate to an admin resolution queue. Labeled output exports straight back as training data, and a Celery task adapts routing thresholds from observed model performance.',
     outcome: 'A working predict → route → review → consensus → retrain loop, hardened with rate limiting, Redis caching, Prometheus metrics, and ~170 tests. The kind of infrastructure every applied-ML team ends up rebuilding badly — built once, properly.',
+    links: [{ label: 'github', href: 'https://github.com/Tilak-khatua/hitl-framework' }],
   },
   {
     slug: 'conversql',
