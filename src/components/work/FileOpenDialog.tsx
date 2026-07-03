@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { getProject } from '../../data/projects'
 import { getLenis } from '../../hooks/useLenis'
@@ -12,7 +12,6 @@ export default function FileOpenDialog({ slug, onClose }: Props) {
   const project = slug ? getProject(slug) : null
   const [progress, setProgress] = useState(0)
   const [expanded, setExpanded] = useState(false)
-  const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!slug) {
@@ -45,18 +44,8 @@ export default function FileOpenDialog({ slug, onClose }: Props) {
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
 
-    const onWheel = (e: WheelEvent) => {
-      const content = contentRef.current
-      if (!content) return
-      e.stopPropagation()
-      e.preventDefault()
-      content.scrollTop += e.deltaY
-    }
-    window.addEventListener('wheel', onWheel, { passive: false, capture: true })
-
     return () => {
       window.removeEventListener('keydown', onKey)
-      window.removeEventListener('wheel', onWheel, { capture: true } as EventListenerOptions)
       lenis?.start()
       document.body.style.overflow = prevOverflow
     }
@@ -105,7 +94,7 @@ export default function FileOpenDialog({ slug, onClose }: Props) {
               </div>
             ) : (
               <>
-                <div ref={contentRef} className="file-content">
+                <div className="file-content" data-lenis-prevent>
                   <div className="file-content-head">
                     <div className="label">case / {project.year} / {project.role}</div>
                     <h3 className="file-title display">{project.title}</h3>

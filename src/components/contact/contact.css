@@ -130,4 +130,9 @@
 @media (max-width: 620px) {
   .contact { padding: 80px 16px; }
   .contact-bubble, .contact-row { grid-template-columns: 54px 1fr; gap: 8px; }
+  /* 16px minimum stops iOS Safari from auto-zooming on focus */
+  .contact-input, .contact-textarea { font-size: 16px; }
+}
+@media (max-width: 480px) {
+  .contact-label { letter-spacing: 0.15em; }
 }

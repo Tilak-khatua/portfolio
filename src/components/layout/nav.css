@@ -74,6 +74,8 @@
   font-size: 22px;
   margin-left: auto;
   padding: 4px 10px;
+  min-width: 44px;
+  min-height: 44px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 2px;
 }
@@ -92,7 +94,11 @@
     overflow: hidden;
     transition: max-height 220ms var(--ease-out);
   }
-  .nav-items.open { max-height: 320px; }
+  .nav-items.open {
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
+    overflow-y: auto;
+  }
   .nav-item {
     padding: 14px 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);

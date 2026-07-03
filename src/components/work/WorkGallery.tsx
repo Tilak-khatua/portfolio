@@ -14,25 +14,27 @@ export default function WorkGallery() {
   const progressRef = useRef<HTMLDivElement>(null)
   const [opening, setOpening] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' ? window.innerWidth < 900 : false
+    typeof window !== 'undefined' ? !window.matchMedia('(min-width: 900px)').matches : false
   )
 
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 900)
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
+    const mq = window.matchMedia('(min-width: 900px)')
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(!e.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
   }, [])
 
   useEffect(() => {
-    if (reduced || isMobile) return
+    if (reduced) return
     const track = trackRef.current
     const root = rootRef.current
     if (!track || !root) return
 
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia()
+    mm.add('(min-width: 900px)', () => {
       const distance = () => Math.max(0, track.scrollWidth - window.innerWidth + 96)
 
-      const tween = gsap.to(track, {
+      gsap.to(track, {
         x: () => -distance(),
         ease: 'none',
         scrollTrigger: {
@@ -49,15 +51,10 @@ export default function WorkGallery() {
           },
         },
       })
+    })
 
-      return () => {
-        tween.scrollTrigger?.kill()
-        tween.kill()
-      }
-    }, root)
-
-    return () => ctx.revert()
-  }, [reduced, isMobile])
+    return () => mm.revert()
+  }, [reduced])
 
   const stacked = isMobile || reduced
 
