@@ -1,0 +1,91 @@
+/* Typographic panel that fills a card's media area in place of imagery.
+   Everything here is type and rules — no illustration, so it can't read as
+   generic clip art and it stays in register with the rest of the page. */
+.work-card-panel {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  color: var(--ink);
+}
+
+/* ---------- stack, set as a dense band across the top ---------- */
+.panel-stack {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: calc(var(--cell) * 0.85) calc(var(--cell) * 1.2);
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- the middle: oversized index + keyword ---------- */
+.panel-body {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: calc(var(--cell) * 1.2);
+}
+
+/* huge, low-contrast number sitting behind the keyword */
+.panel-index {
+  position: absolute;
+  left: calc(var(--cell) * 1);
+  top: calc(var(--cell) * 0.2);
+  font-size: clamp(64px, 11vw, 130px);
+  line-height: 0.8;
+  font-weight: 500;
+  color: var(--accent, var(--terracotta));
+  opacity: 0.16;
+  letter-spacing: -0.04em;
+  user-select: none;
+}
+
+.panel-keyword {
+  position: relative;
+  margin: 0;
+  text-align: right;
+  font-size: clamp(22px, 2.6vw, 40px);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+.panel-keyword-line { display: block; }
+/* the second line carries the accent, so each card differs */
+.panel-keyword-line:last-child { color: var(--accent, var(--terracotta)); }
+
+/* ---------- foot: role · rule · year ---------- */
+.panel-foot {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--cell) * 1);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: calc(var(--cell) * 0.85) calc(var(--cell) * 1.2);
+  border-top: 1px solid var(--rule);
+}
+.panel-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* hover: the keyword shifts a touch and the index brightens */
+.panel-keyword,
+.panel-index {
+  transition: transform 500ms var(--ease-out), opacity 500ms var(--ease-out);
+}
+.work-card-inner:hover .panel-keyword { transform: translateX(calc(var(--cell) * -0.4)); }
+.work-card-inner:hover .panel-index { opacity: 0.28; }
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-keyword,
+  .panel-index { transition: none; }
+  .work-card-inner:hover .panel-keyword { transform: none; }
+}

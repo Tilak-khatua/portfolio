@@ -12,5 +12,7 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    // WSL2 on /mnt/c: inotify doesn't fire for Windows-drive files, so poll for HMR
+    watch: { usePolling: true, interval: 300 },
   },
 })

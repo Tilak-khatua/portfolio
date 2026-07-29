@@ -1,122 +1,144 @@
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
 import { tracks, vibe } from '../../data/tracks'
+import { useReducedMotion } from '../../hooks/useReducedMotion'
+import { usePixelHover } from '../../hooks/usePixelHover'
 import './rotation.css'
 
+/** Track accent keys mapped onto the warm-earth palette. */
+const ACCENTS: Record<string, string> = {
+  hot: 'var(--terracotta)',
+  cyan: 'var(--brown)',
+  lime: 'var(--ochre)',
+  violet: 'var(--clay)',
+}
+
+/** Deterministic bar heights per track, so a song's waveform never changes. */
+function waveform(seed: string, bars = 28) {
+  let h = 2166136261
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  return Array.from({ length: bars }, (_, i) => {
+    h = Math.imul(h ^ (i + 1), 16777619)
+    const n = ((h >>> 0) % 1000) / 1000
+    // keep bars in a readable band rather than spiking to zero
+    return 0.25 + n * 0.75
+  })
+}
+
 export default function Rotation() {
-  const total = tracks.length
+  const reduced = useReducedMotion()
+  const rootRef = useRef<HTMLElement>(null)
+  const playerRef = usePixelHover<HTMLDivElement>({ mode: 'corners', density: 0.22 })
+  const [active, setActive] = useState(0)
+
+  const current = tracks[active]
+  const bars = waveform(current.title)
+  const top = Math.max(...tracks.map((t) => Number(t.plays)))
+
+  useEffect(() => {
+    if (reduced || !rootRef.current) return
+
+    const ctx = gsap.context(() => {
+      gsap.from('.rot-row', {
+        opacity: 0,
+        y: 16,
+        duration: 0.6,
+        ease: 'power3.out',
+        stagger: 0.05,
+        scrollTrigger: { trigger: '.rot-list', start: 'top 85%', once: true },
+      })
+      gsap.from('.rot-player', {
+        opacity: 0,
+        y: 24,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: '.rot-grid', start: 'top 82%', once: true },
+      })
+    }, rootRef)
+
+    return () => ctx.revert()
+  }, [reduced])
 
   return (
-    <section id="play" className="rot">
-      <div className="rot-intro mono">
-        <div className="rot-label">[ ROTATION / top_tracks.m3u ]</div>
-        <h2 className="rot-heading display">on rotation</h2>
-        <div className="rot-sub">
-          what's been living in my head lately.{' '}
-          <span style={{ opacity: 0.55 }}>handpicked, not algorithmic.</span>
+    <section id="play" ref={rootRef} className="section rot">
+      <div className="container">
+        <div className="eyebrow rot-eyebrow" data-field-safe="10">
+          On rotation / {String(tracks.length).padStart(2, '0')} tracks
         </div>
-      </div>
 
-      <div className="rot-grid">
-        <motion.div
-          className="rot-list win"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <div className="win-bar">
-            <div className="win-dots">
-              <span className="win-dot red" />
-              <span className="win-dot yellow" />
-              <span className="win-dot green" />
-            </div>
-            <div className="win-title">winamp.playlist — tilak's top {total}</div>
-            <div className="win-actions">
-              <span className="win-action">_</span>
-              <span className="win-action">□</span>
-              <span className="win-action">×</span>
-            </div>
-          </div>
-
-          <div className="rot-table" role="list">
-            <div className="rot-row rot-row-head mono" aria-hidden>
-              <span>#</span>
-              <span>title / artist</span>
-              <span className="rot-col-album">album</span>
-              <span className="rot-col-plays">plays</span>
-              <span className="rot-col-len">len</span>
+        <div className="rot-grid">
+          {/* ---- now playing panel ---- */}
+          <div
+            ref={playerRef}
+            className="rot-player"
+            style={{ ['--accent' as string]: ACCENTS[current.accent] }}
+          >
+            <div className="rot-player-bar mono">
+              <span className="rot-player-dot" aria-hidden />
+              <span>Now playing</span>
+              <span className="rot-player-time">{current.duration}</span>
             </div>
 
-            {tracks.map((t) => (
-              <motion.div
-                key={t.rank}
-                className="rot-row"
-                role="listitem"
-                style={{ ['--accent' as never]: `var(--${t.accent})` }}
-                whileHover={{ x: 4 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              >
-                <span className="rot-rank mono">{String(t.rank).padStart(2, '0')}</span>
-
-                <span className="rot-title-cell">
-                  <span className="rot-art">
-                    <span className="rot-art-inner" />
-                  </span>
-                  <span className="rot-title-text">
-                    <span className="rot-title-song">{t.title}</span>
-                    <span className="rot-title-artist mono">{t.artist}</span>
-                  </span>
-                </span>
-
-                <span className="rot-album mono rot-col-album">{t.album}</span>
-
-                <span className="rot-plays mono rot-col-plays">
-                  <span className="rot-plays-bar">
-                    <span
-                      className="rot-plays-fill"
-                      style={{ width: `${(parseInt(t.plays, 10) / 320) * 100}%` }}
-                    />
-                  </span>
-                  <span className="rot-plays-num">{t.plays}</span>
-                </span>
-
-                <span className="rot-len mono rot-col-len">{t.duration}</span>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="rot-status mono">
-            <span>▮▮ paused · {total} tracks · mood: {vibe.mood}</span>
-          </div>
-        </motion.div>
-
-        <motion.aside
-          className="rot-side win"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <div className="win-bar win-bar-light">
-            <div className="win-dots">
-              <span className="win-dot red" />
-              <span className="win-dot yellow" />
-              <span className="win-dot green" />
+            <div className="rot-player-body">
+              <p className="rot-player-title display">{current.title}</p>
+              <p className="rot-player-artist">{current.artist}</p>
+              <p className="rot-player-album mono">{current.album}</p>
             </div>
-            <div className="win-title">vibe.txt</div>
-          </div>
-          <div className="rot-side-body">
-            <div className="label">current mood</div>
-            <p className="rot-side-mood serif">{vibe.mood}</p>
 
-            <div className="label" style={{ marginTop: 18 }}>last updated</div>
-            <p className="rot-side-updated mono">{vibe.lastUpdated}</p>
-
-            <div className="rot-side-foot mono">
-              <span>♪ not a spotify wrapped — just taste</span>
+            {/* deterministic per-track waveform; animates only when not reduced */}
+            <div className={`rot-wave ${reduced ? '' : 'is-live'}`} aria-hidden>
+              {bars.map((height, i) => (
+                <span
+                  key={i}
+                  className="rot-wave-bar"
+                  style={{
+                    height: `${height * 100}%`,
+                    animationDelay: `${(i % 7) * 0.11}s`,
+                  }}
+                />
+              ))}
             </div>
+
+            <p className="rot-vibe mono">{vibe.mood}</p>
           </div>
-        </motion.aside>
+
+          {/* ---- track list ---- */}
+          <ol className="rot-list">
+            {tracks.map((t, i) => {
+              const isActive = i === active
+              return (
+                <li
+                  key={`${t.title}-${t.rank}`}
+                  className={`rot-row ${isActive ? 'is-active' : ''}`}
+                  style={{ ['--accent' as string]: ACCENTS[t.accent] }}
+                >
+                  <button className="rot-row-btn" onPointerEnter={() => setActive(i)} onFocus={() => setActive(i)}>
+                    <span className="rot-rank mono">
+                      {isActive ? '▶' : String(t.rank).padStart(2, '0')}
+                    </span>
+
+                    <span className="rot-main">
+                      <span className="rot-title">{t.title}</span>
+                      <span className="rot-artist">{t.artist}</span>
+                    </span>
+
+                    <span className="rot-bar" aria-hidden>
+                      <span
+                        className="rot-bar-fill"
+                        style={{ transform: `scaleX(${Number(t.plays) / top})` }}
+                      />
+                    </span>
+
+                    <span className="rot-plays mono">{t.plays}</span>
+                  </button>
+                </li>
+              )
+            })}
+          </ol>
+        </div>
       </div>
     </section>
   )

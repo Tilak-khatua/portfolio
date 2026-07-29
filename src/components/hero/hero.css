@@ -1,175 +1,148 @@
 .hero {
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex;
-  align-items: stretch;
-  padding: 80px 24px 40px;
   position: relative;
-  overflow: hidden;
+  padding-bottom: calc(var(--cell) * 3);
 }
-.hero-grid {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 24px;
+
+/* Solid paper block — the field never draws over the masthead, and its bottom
+   edge is where the field visibly begins. */
+.hero-head {
+  position: relative;
+  z-index: 2;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
 }
-.hero-top {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  opacity: 0.5;
-  padding-top: 24px;
-}
-.hero-top-slot {
-  display: inline-block;
-  min-height: 1em;
-}
-.hero-main {
+
+/* Full-bleed: no max-width cap, so the name spans the whole page width. The
+   lower rows are constrained separately rather than by the masthead. */
+.hero-mast {
+  padding: calc(var(--cell) * 2) var(--gutter) calc(var(--cell) * 2);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 32px;
+  gap: calc(var(--cell) * 1.5);
 }
+
+/* ---------- stacked name ---------- */
+.hero-name-wrap { position: relative; }
+
 .hero-name {
-  font-size: clamp(56px, 22vw, 320px);
-  line-height: 0.85;
-  letter-spacing: -0.02em;
   margin: 0;
-  position: relative;
-  color: #fff;
-  display: inline-block;
-  overflow: hidden;
-  padding-bottom: 0.08em;
+  /* sized so KHATUA (6 chars, the longer line) reaches both gutters */
+  font-size: clamp(58px, 16.4vw, 340px);
+  line-height: 0.82;
+  letter-spacing: -0.055em;
 }
-.hero-name .char {
-  display: inline-block;
-  will-change: transform, opacity;
-}
-.hero-name::before,
-.hero-name::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  padding-bottom: 0.08em;
-  pointer-events: none;
-  opacity: 0;
-}
-.hero-name.glitch-on::before {
-  opacity: 0.9;
-  color: var(--hot);
-  transform: translate(-4px, 0);
-  mix-blend-mode: screen;
-}
-.hero-name.glitch-on::after {
-  opacity: 0.9;
-  color: var(--cyan);
-  transform: translate(4px, 0);
-  mix-blend-mode: screen;
-}
-.hero-name.glitch-on {
-  animation: hero-tear 0.14s steps(3) 1;
-}
-@keyframes hero-tear {
-  0% { clip-path: inset(0 0 0 0); }
-  30% { clip-path: inset(20% 0 30% 0); transform: translateX(-2px); }
-  60% { clip-path: inset(60% 0 10% 0); transform: translateX(3px); }
-  100% { clip-path: inset(0 0 0 0); }
-}
+.hero-name-line { display: block; }
+/* SplitType wraps lines; clip so characters can rise into view */
+/* No overflow clip — the entrance uses clip-path, and a hidden overflow would
+   crop descenders once the wipe is complete. */
+.hero-name .line { padding-bottom: 0.06em; }
 
-.hero-sub {
-  max-width: 720px;
-  font-size: clamp(16px, 1.8vw, 22px);
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.85);
-}
-.hero-sub-serif {
-  font-size: 1.2em;
-  font-style: italic;
-  color: var(--hot);
-}
-.hero-sub-mono {
+/* Sits under the name, left-aligned with it — hanging it off the right edge
+   left a large dead gap beside the shorter first line. */
+.hero-name-role {
   display: block;
-  margin-top: 10px;
-  font-size: 13px;
-  opacity: 0.7;
-  line-height: 1.6;
+  margin-top: calc(var(--cell) * 0.8);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(20px, 2.8vw, 46px);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: var(--terracotta);
 }
 
-.hero-meta {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 24px;
-  padding-top: 8px;
+/* ---------- rotating strip under the name ---------- */
+/* The name is full-bleed, but these rows are text — cap them so lines stay a
+   readable length on wide screens. */
+.hero-strip,
+.hero-base {
+  width: 100%;
+  max-width: 1240px;
 }
-.hero-arrow { transition: transform 150ms var(--ease-out); }
-.chrome-btn:hover .hero-arrow { transform: translateX(3px); }
-.hero-status {
+
+.hero-strip {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  padding: calc(var(--cell) * 0.8) 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: calc(var(--cell) * 1.5);
+}
+.hero-strip-mark {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
+  line-height: 1;
+  color: var(--terracotta);
+  flex: none;
+  animation: hero-strip-blink 1.4s steps(1) infinite;
 }
-.hero-status-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--lime);
-  box-shadow: 0 0 8px var(--lime);
-  animation: nav-pulse 2s ease-in-out infinite;
+@keyframes hero-strip-blink {
+  0%, 60% { opacity: 1; }
+  60.01%, 100% { opacity: 0.25; }
 }
-.hero-strip {
+.hero-strip-text {
   font-size: 11px;
-  letter-spacing: 0.2em;
-  opacity: 0.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  position: relative;
-  padding-bottom: 4px;
-}
-.hero-strip::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 1px;
-  width: var(--strip-underline, 0%);
-  background: currentColor;
-  opacity: 0.6;
-}
-.hero-hint {
-  font-size: 11px;
-  opacity: 0.4;
-  letter-spacing: 0.3em;
-  padding-bottom: 8px;
-  animation: hero-bounce 2s ease-in-out infinite;
-}
-@keyframes hero-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  /* tabular + fixed min-width so scrambling never reflows the row */
+  font-variant-numeric: tabular-nums;
+  min-width: 24ch;
 }
 
-@media (max-width: 720px) {
-  .hero {
-    min-height: auto;
-    padding: 96px 16px 40px;
-  }
-  .hero-grid {
-    grid-template-rows: auto auto auto;
-    gap: 18px;
-  }
-  .hero-main {
-    justify-content: flex-start;
-    gap: 18px;
-  }
-  .hero-name { line-height: 0.9; }
-  .hero-meta { grid-template-columns: 1fr; gap: 12px; }
-  .hero-strip { display: none; }
+/* ---------- bottom row ---------- */
+.hero-base {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: calc(var(--cell) * 3);
+  border-top: 1px solid var(--rule);
+  padding-top: calc(var(--cell) * 1.5);
 }
-@media (max-width: 480px) {
-  .hero-top, .hero-hint { letter-spacing: 0.15em; }
+.hero-bio {
+  font-size: clamp(14px, 1.05vw, 17px);
+  line-height: 1.6;
+  max-width: 52ch;
+  margin: 0;
+  color: var(--ink-2);
+}
+.hero-bio em { font-style: italic; color: var(--ink); }
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+/* ---------- pixel band below the masthead ---------- */
+.hero-field {
+  position: relative;
+  height: clamp(calc(var(--cell) * 24), 56vh, calc(var(--cell) * 46));
+}
+.hero-band {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .hero-base {
+    grid-template-columns: 1fr;
+    gap: calc(var(--cell) * 1.5);
+    align-items: start;
+  }
+  .hero-field { height: calc(var(--cell) * 12); }
+}
+
+@media (max-width: 620px) {
+  /* the inline role would collide with the name at this size */
+  .hero-name-role {
+    position: static;
+    display: block;
+    margin-top: 0.25em;
+  }
 }
