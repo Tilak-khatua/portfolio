@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The poll: four columns of a population, which is what the site is. A
+       letterform would be unreadable at 16px, but bars of differing height still
+       read as a chart when they are only a few pixels wide. Weights are heavy and
+       the margin tight, so the mark holds up in a browser tab. -->
+  <rect width="64" height="64" fill="#f1ece2"/>
+  <g fill="#1c1e26">
+    <rect x="6" y="26" width="11" height="27"/>
+    <rect x="20" y="34" width="11" height="19"/>
+    <rect x="48" y="38" width="10" height="15"/>
+  </g>
+  <!-- The winning column carries the accent, so the mark has one point of colour. -->
+  <rect x="34" y="10" width="11" height="43" fill="#cb3d20"/>
+  <rect x="6" y="55" width="52" height="3" fill="#1c1e26"/>
+</svg>

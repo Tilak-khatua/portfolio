@@ -1,272 +1,41 @@
-/* ---------- tokens ---------- */
 :root {
-  /* ground + ink */
-  --paper: #f4f1ea;
-  --paper-2: #ebe6dc;
-  --ink: #1a1714;
-  --ink-2: #4a423a;
-  --ink-3: #8a7e70;
-  --rule: rgba(26, 23, 20, 0.14);
-
-  /* field palette — also used sparingly in the UI */
-  --terracotta: #8c3a1e;
-  --ochre: #c67b23;
-  --clay: #d9a455;
-  --brown: #2e241c;
-
-  --font-display: 'Archivo', 'Inter', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-  --font-serif: 'Instrument Serif', Georgia, serif;
-
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* One modular unit shared by the layout AND the pixel field, so spacing and
-     texture land on the same grid. Gutter is 4 cells, sections are 9. */
-  --cell: 14px;
-  --gutter: calc(var(--cell) * 4);
-  --measure: 62ch;
-}
-
-@media (max-width: 680px) {
-  :root { --gutter: calc(var(--cell) * 2); }
+  font-family: 'Inter', Arial, sans-serif;
+  color: #191917;
+  background: #f7f4ed;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --paper: #f7f4ed;
+  --paper-raised: #fffcf6;
+  --ink: #191917;
+  --muted: #5c5a54;
+  --line: #b6b0a4;
+  --line-light: #d8d2c5;
+  --orange: #a7330f;
+  --teal: #086b70;
+  --violet: #6840bc;
+  --graph-ground: #242423;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'Inter', Arial, sans-serif;
+  --mono: 'DM Mono', 'Courier New', monospace;
+  --page-width: 1440px;
+  --gutter: clamp(18px, 3.4vw, 52px);
+  --ease: cubic-bezier(.16, 1, .3, 1);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
-html {
-  scroll-behavior: auto;
-  background: var(--paper);
-  color: var(--ink);
-}
-body {
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.55;
-  min-height: 100vh;
-  background: var(--paper);
-  color: var(--ink);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-img { max-width: 100%; display: block; }
-button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
-a { color: inherit; text-decoration: none; }
-::selection { background: var(--clay); color: var(--brown); }
-
-/* Keyboard focus. The design strips native button styling, so without this there
-   is no visible focus anywhere. `:focus-visible` (not `:focus`) keeps the ring
-   off mouse clicks while still showing it for tab navigation. */
-:focus-visible {
-  outline: 2px solid var(--terracotta);
-  outline-offset: 3px;
-  border-radius: 1px;
-}
-/* Cards use a full-bleed invisible overlay button, so ring the card instead of
-   the transparent hit area — an outline on that would sit under the content. */
-.work-card-hit:focus-visible {
-  outline: none;
-}
-.work-card-inner:has(.work-card-hit:focus-visible) {
-  outline: 2px solid var(--terracotta);
-  outline-offset: 3px;
-}
-
-/* ---------- type primitives ---------- */
-.mono { font-family: var(--font-mono); }
-.display {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 0.92;
-  text-wrap: balance;
-}
-.serif { font-family: var(--font-serif); }
-
-/* small uppercase mono eyebrow — the structural label of the whole system */
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.eyebrow::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--rule);
-}
-@media (max-width: 480px) {
-  .eyebrow { letter-spacing: 0.14em; }
-}
-
-/* ---------- layout ---------- */
-.container {
-  width: 100%;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-  position: relative;
-  z-index: 1;
-}
-main { display: block; position: relative; z-index: 1; }
-
-.section {
-  padding: calc(var(--cell) * 6) 0;
-  position: relative;
-}
-/* consecutive sections would otherwise stack two full paddings */
-.section + .section { padding-top: 0; }
-
-/* ---------- links + buttons ---------- */
-.link {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  border-bottom: 1px solid var(--rule);
-  padding-bottom: 2px;
-  transition: border-color 200ms var(--ease-out), color 200ms var(--ease-out);
-}
-.link:hover { color: var(--terracotta); border-color: var(--terracotta); }
-
-.btn {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 14px 24px;
-  background: var(--ink);
-  color: var(--paper);
-  border-radius: 0;
-  transition: background 200ms var(--ease-out), transform 200ms var(--ease-out);
-}
-.btn:hover { background: var(--terracotta); }
-
-/* Scattered pixel cells over a hovered element (see usePixelHover).
-   Default is 'corners' on a content box: the layer paints ABOVE the box, since
-   children with their own opaque background would otherwise cover the cells.
-   Corners never overlap text, so nothing is obscured. */
-.pxfx {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: grid;
-  pointer-events: none;
-  overflow: hidden;
-}
-/* Buttons are the 'fill' case: cells go behind the raised .pxlbl, and the layer
-   bleeds past the edges (the button clips it) so cells don't sit flush with the
-   border. */
-.btn .pxfx {
-  inset: -9px;
-  z-index: -1;
-}
-.pxfx i {
-  display: block;
-  background: transparent;
-}
-/* keep label content above the cells */
-.pxlbl {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.btn:disabled { opacity: 0.5; cursor: default; }
-.btn-ghost {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--ink);
-}
-.btn-ghost:hover { background: var(--ink); color: var(--paper); }
-
-/* mono metadata chip, used for stack lists */
-.chip {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-  border: 1px solid var(--rule);
-  padding: 5px 9px;
-  white-space: nowrap;
-}
-
-/* ---------- footer ---------- */
-.site-footer {
-  border-top: 1px solid var(--rule);
-  padding: 28px 0;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  background: var(--paper);
-  position: relative;
-  z-index: 1;
-}
-.site-footer-inner {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.footer-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: color 200ms var(--ease-out);
-  cursor: pointer;
-}
-.footer-tag:hover { color: var(--terracotta); }
-.footer-tag-text {
-  display: inline-block;
-  white-space: nowrap;
-  max-width: 48ch;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.footer-tag-refresh {
-  display: inline-block;
-  font-size: 12px;
-  opacity: 0.6;
-}
-.footer-tag:hover .footer-tag-refresh { opacity: 1; }
-.footer-tag-refresh.spin { animation: footer-refresh-spin 0.5s var(--ease-out) 1; }
-@keyframes footer-refresh-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+html { min-width: 320px; scroll-behavior: smooth; scroll-padding-top: 24px; }
+body { min-width: 320px; margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--sans); }
+body, #root { min-height: 100%; }
+body { overflow-x: hidden; }
+button, input { font: inherit; }
+button { color: inherit; }
+a { color: inherit; }
+svg { display: block; max-width: 100%; }
+::selection { color: var(--paper); background: var(--orange); }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-@media (max-width: 768px) {
-  :root { --gutter: 20px; }
-  body { font-size: 15px; }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

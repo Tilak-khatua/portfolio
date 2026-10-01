@@ -1,88 +1,61 @@
-import { useCallback, useEffect, useState } from 'react'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useLenis, getLenis } from './hooks/useLenis'
-import { getField, suspendFieldSync } from './hooks/usePixelField'
-import { useFieldBurst } from './hooks/useFieldBurst'
-import PixelField from './components/field/PixelField'
-import Loader from './components/loader/Loader'
-import Hero from './components/hero/Hero'
-import WorkList from './components/work/WorkList'
-import CaseStudy from './components/work/CaseStudy'
-import Rotation from './components/rotation/Rotation'
-import About from './components/about/About'
-import Contact from './components/contact/Contact'
-import RotatingTag from './components/layout/RotatingTag'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import Workshop from './components/workshop/Workshop'
+import ProjectPage from './components/workshop/project/ProjectPage'
+import { usePortfolioLocation } from './components/workshop/usePortfolioLocation'
+import { getProject } from './data/projects'
+import './components/workshop/workshop.css'
+import './components/workshop/project/project.css'
+import './components/workshop/motion.css'
+import './components/workshop/demos/sketches.css'
+import './components/workshop/contact/contact.css'
+import LoadingScreen from './components/workshop/loading/LoadingScreen'
+import './components/workshop/loading/loading.css'
 
 export default function App() {
-  // `booted` releases the hero as the loader lifts; `loading` keeps the loader
-  // mounted until its lift finishes, so it never cuts its own animation short.
+  const [contentReady, setContentReady] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [booted, setBooted] = useState(false)
-  const [openCase, setOpenCase] = useState<string | null>(null)
+  const [entranceReady, setEntranceReady] = useState(false)
+  const reveal = useCallback(() => setContentReady(true), [])
+  const enter = useCallback(() => setEntranceReady(true), [])
+  const complete = useCallback(() => setLoading(false), [])
+  const { location, openProject, goHome } = usePortfolioLocation(contentReady)
+  const missingProjectContent = useRef<HTMLElement>(null)
+  const currentProject = location.type === 'project' ? getProject(location.slug) : undefined
 
-  useLenis()
-  useFieldBurst()
-
-  // scrollRestoration is disabled in main.tsx (before paint). This is a belt-and-
-  // braces reset for the case where a layout shift nudges the page after mount.
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
+    document.title = location.type === 'project'
+      ? currentProject ? `${currentProject.title} — Tilak Khatua` : 'Project not found — Tilak Khatua'
+      : 'Tilak Khatua — Things I couldn’t stop thinking about'
+  }, [currentProject, location.type])
 
-  // Lock scrolling until the loader lifts away.
   useEffect(() => {
-    if (booted) return
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = prev
-    }
-  }, [booted])
+    if (!loading && location.type === 'project') document.getElementById('project-title')?.focus({ preventScroll: true })
+  }, [loading, location.type])
 
-  const onReveal = useCallback(() => setBooted(true), [])
-  const onDone = useCallback(() => setLoading(false), [])
+  let content: ReactNode
+  if (location.type === 'project') {
+    if (!currentProject) {
+      content = (
+        <main className="workshop project-page">
+          <a className="skip-link" href="#project-content" onClick={(event) => {
+            event.preventDefault()
+            missingProjectContent.current?.focus({ preventScroll: true })
+            missingProjectContent.current?.scrollIntoView({ block: 'start' })
+          }}>Skip to content</a>
+          <a className="back-link" href="#experiments" onClick={(event) => { event.preventDefault(); goHome() }}>← Back to experiments</a>
+          <section id="project-content" ref={missingProjectContent} className="project-not-found" tabIndex={-1}>
+            <p className="eyebrow">PROJECT NOT FOUND</p>
+            <h1>That page wandered off.</h1>
+            <p>Try the experiment index instead.</p>
+            <button className="text-link" onClick={goHome}>Return to the experiments ↗</button>
+          </section>
+        </main>
+      )
+    } else content = <ProjectPage project={currentProject} openProject={openProject} goHome={goHome} entranceReady={entranceReady} />
+  } else content = <Workshop openProject={openProject} entranceReady={entranceReady} />
 
-  // The pinned work gallery measures itself while the body is still scroll-locked,
-  // so its start/end have to be recomputed once the loader releases. The refresh
-  // can restore a scroll offset of its own, so force the top afterwards — and
-  // reset Lenis too, since it tracks position independently of the window.
-  useEffect(() => {
-    if (loading) return
-    const id = window.setTimeout(() => {
-      ScrollTrigger.refresh()
-      getLenis()?.scrollTo(0, { immediate: true })
-      window.scrollTo(0, 0)
-    }, 120)
-    return () => window.clearTimeout(id)
-  }, [loading])
-
-  // The field is fully covered while a case is open; keeping its loop running
-  // repaints thousands of cells per frame and makes the dialog scroll stutter.
-  useEffect(() => {
-    const open = openCase !== null
-    getField()?.setPaused(open)
-    suspendFieldSync(open)
-  }, [openCase])
-
-  return (
-    <>
-      <PixelField />
-      {loading && <Loader onReveal={onReveal} onDone={onDone} />}
-      <main>
-        <Hero booted={booted} />
-        <WorkList onOpen={setOpenCase} />
-        <About />
-        <Rotation />
-        <Contact />
-        <footer className="site-footer">
-          <div className="site-footer-inner">
-            <span>© {new Date().getFullYear()} Tilak Khatua</span>
-            <RotatingTag />
-            <span>Built with too much care</span>
-          </div>
-        </footer>
-      </main>
-      <CaseStudy slug={openCase} onClose={() => setOpenCase(null)} />
-    </>
-  )
+  return <>
+    <div className="portfolio-stage" inert={loading} aria-hidden={loading || undefined}>{contentReady && content}</div>
+    {loading && <LoadingScreen onReveal={reveal} onEnter={enter} onComplete={complete} />}
+  </>
 }

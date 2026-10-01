@@ -1,0 +1,239 @@
+/* The flat view is a document, so it must be allowed to scroll — the fold's fixed
+   stage locks overflow on the root elements. */
+html:has(.flat),
+body:has(.flat) {
+  height: auto;
+  overflow-y: auto;
+}
+
+.flat {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 52px 22px 72px;
+}
+
+.flat-face { margin-bottom: 76px; }
+
+.flat-index {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 16px;
+}
+
+.flat-heading {
+  font-family: var(--font-display);
+  font-size: clamp(54px, 17vw, 92px);
+  line-height: 0.94;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0 0 22px;
+}
+
+.flat-heading span { display: block; line-height: inherit; }
+.flat-heading.is-sub { font-size: clamp(42px, 13vw, 68px); }
+
+.flat-body {
+  font-family: var(--font-tech);
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--fg-2);
+  margin: 0;
+}
+
+/* ---------- work ---------- */
+.flat-work { list-style: none; margin: 0; padding: 0; }
+.flat-work li { border-top: 1px solid var(--edge); }
+.flat-work li:last-child { border-bottom: 1px solid var(--edge); }
+
+.flat-work button {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  width: 100%;
+  padding: 20px 0;
+  text-align: left;
+}
+
+.flat-n {
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--dim);
+}
+
+.flat-work-main { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+
+.flat-work-title {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.flat-work-tagline { font-weight: 300; font-size: 15px; line-height: 1.45; color: var(--fg-2); }
+.flat-work-mark { font-size: 20px; color: var(--hot); }
+
+.flat-detail { padding: 4px 0 28px; }
+
+.flat-lead {
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--fg);
+  margin: 0 0 26px;
+}
+
+.flat-detail section { margin-bottom: 22px; }
+
+.flat-detail h3 {
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--hot);
+  margin: 0 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.flat-detail p {
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.62;
+  color: var(--fg-2);
+  margin: 0;
+}
+
+.flat-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--edge-strong);
+}
+
+.flat-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 22px;
+  border-top: 1px solid var(--edge);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* ---------- about spec ---------- */
+.flat-spec { margin: 26px 0 0; }
+.flat-spec > div {
+  display: grid;
+  grid-template-columns: clamp(84px, 26vw, 116px) 1fr;
+  gap: 14px;
+  align-items: baseline;
+  padding: 9px 0;
+  border-top: 1px solid var(--edge);
+}
+.flat-spec dt {
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.flat-spec dd { margin: 0; font-size: 14px; color: var(--fg-2); }
+
+.flat-links { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 24px; }
+.flat-links a {
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--edge-strong);
+}
+.flat-links a:hover { color: var(--hot); border-color: var(--hot); }
+
+/* ---------- contact wire ---------- */
+.wire { margin-top: 24px; }
+
+.wire-mail {
+  display: inline-block;
+  font-size: clamp(17px, 5vw, 22px);
+  color: var(--fg);
+  margin-bottom: 26px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--edge-strong);
+}
+.wire-mail:hover { color: var(--hot); border-color: var(--hot); }
+
+/* Ruled rows, no boxes: a form on a drawing rather than in a card. */
+.wire-row {
+  display: grid;
+  grid-template-columns: clamp(72px, 22vw, 96px) 1fr;
+  gap: 16px;
+  align-items: baseline;
+  border-top: 1px solid var(--edge);
+  padding: 10px 0;
+}
+
+.wire-row > span {
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.wire-row input,
+.wire-row textarea {
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: none;
+  border: 0;
+  padding: 2px 0;
+  resize: none;
+  width: 100%;
+}
+.wire-row input:focus, .wire-row textarea:focus { outline: none; }
+.wire-row:focus-within { border-color: var(--hot); }
+/* Baseline-aligned grid items collapse a textarea without an explicit height. */
+.wire-row textarea { display: block; min-height: 76px; }
+
+.wire-note {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  margin: 14px 0 0;
+}
+.wire-note.is-error { color: var(--hot); }
+
+.wire-send {
+  margin-top: 22px;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--edge-strong);
+}
+.wire-send:hover:not(:disabled) { color: var(--hot); border-color: var(--hot); }
+.wire-send:disabled { color: var(--dim); cursor: default; }

@@ -3,38 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tilak Khatua — Forward engineer</title>
-    <meta name="description" content="Tilak Khatua — forward engineer. Designs interfaces people can use without swearing, and writes code that ships. Selected work in design, frontend, backend and applied ML." />
-    <meta property="og:title" content="Tilak Khatua — Forward engineer" />
-    <meta property="og:description" content="Somewhere between a UI/UX sorcerer and an ML apprentice who googled 'what is gradient descent' at 2am." />
+    <title>Tilak Khatua — Things I couldn’t stop thinking about</title>
+    <meta name="description" content="A personal workshop of questions, experiments, and things built by Tilak Khatua." />
+    <meta property="og:title" content="Tilak Khatua — Things I couldn’t stop thinking about" />
+    <meta property="og:description" content="A personal workshop of questions, experiments, and things built by Tilak Khatua." />
     <meta property="og:type" content="website" />
-    <!-- Save a 1200x630 screenshot of the hero to public/og.png and set og:url to
-         the deployed origin. Without an image, shared links render as bare text. -->
-    <meta property="og:image" content="/og.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Tilak Khatua — Forward engineer" />
-    <meta name="twitter:description" content="Designs interfaces people can use without swearing, and writes code that ships." />
-    <meta name="twitter:image" content="/og.png" />
-    <meta name="theme-color" content="#f4f1ea" />
+    <meta property="og:image" content="/og-workshop.png" />
+    <meta name="theme-color" content="#f7f4ed" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
-    <script>
-      // Inline and in <head> so it runs before the browser restores scroll.
-      // A deferred module script executes too late to reliably prevent it.
-      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-      // Belt and braces: the page grows as fonts/pins settle, and some browsers
-      // re-apply the old offset once the document is tall enough to allow it.
-      window.addEventListener('load', function () {
-        window.scrollTo(0, 0);
-      });
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main>
+        <h1>Things I couldn’t stop thinking about</h1>
+        <p>I’m Tilak Khatua. I build tools for questions that won’t leave me alone.</p>
+        <p>This workshop needs JavaScript for its interactive experiments. You can still reach me at <a href="mailto:tilakkhatua01@gmail.com">tilakkhatua01@gmail.com</a>.</p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

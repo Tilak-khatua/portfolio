@@ -4,9 +4,13 @@ export type Project = {
   title: string
   tagline: string
   year: string
+  /** YYYY-MM. Drives the timeline and each tech node's first-use date. */
+  started: string
   role: string
   stack: string[]
   accent: 'hot' | 'cyan' | 'lime' | 'violet'
+  /** Three.js geometry name for the WebGL canvas. */
+  geometry: string
   /** Two or three words set large on the card panel — what the thing *is*. */
   keyword: string[]
   summary: string
@@ -23,9 +27,11 @@ export const projects: Project[] = [
     title: 'Third Angle',
     tagline: 'digital twins of Mumbai and Delhi you can poll like an electorate.',
     year: '2026',
+    started: '2026-06',
     role: 'design + build',
     stack: ['Rust', 'axum', 'SQLite', 'Amazon Bedrock', 'OSM + DEM', 'Docker'],
     accent: 'cyan',
+    geometry: 'icosahedron',
     keyword: ['Synthetic', 'Electorate'],
     summary:
       'Synthetic-population election and opinion predictors for Mumbai and Delhi — reweighted survey microdata, an India-native persona schema, and a pixel map built from real terrain.',
@@ -48,9 +54,11 @@ export const projects: Project[] = [
     title: 'ReconDart',
     tagline: 'OSINT threat intel, minus the 14 open tabs.',
     year: '2026',
+    started: '2026-04',
     role: 'design + build',
     stack: ['React', 'TypeScript', 'Flask', 'Python', 'ReactFlow', 'Gemini', 'Mandiant Capa'],
     accent: 'hot',
+    geometry: 'dodecahedron',
     keyword: ['Threat', 'Intelligence'],
     summary: 'Automated threat-intelligence platform. Scan IPs, domains, emails, files — get a graph of what\'s dangerous and why.',
     problem: 'OSINT investigations mean juggling 10+ disconnected tools, copy-pasting indicators between them, and hoping you remember to map findings to MITRE ATT&CK. Analysts burn hours on plumbing instead of judgment.',
@@ -64,9 +72,11 @@ export const projects: Project[] = [
     title: 'HITL Framework',
     tagline: 'ML models that know when to ask a human.',
     year: '2026',
+    started: '2026-05',
     role: 'design + build',
     stack: ['FastAPI', 'Celery', 'Redis', 'PostgreSQL', 'React', 'TypeScript', 'scikit-learn'],
     accent: 'violet',
+    geometry: 'octahedron',
     keyword: ['Human', 'In The Loop'],
     summary: 'Human-in-the-loop platform for ML pipelines. Low-confidence predictions route to human reviewers; consensus becomes training data.',
     problem: 'ML models are confidently wrong at the worst times. Teams either eat the errors or manually review everything — there\'s rarely a middle path that routes only the uncertain cases to humans and feeds their answers back into training.',
@@ -80,9 +90,11 @@ export const projects: Project[] = [
     title: 'ConverSQL',
     tagline: 'natural language → SQL, without the prompt-engineering PhD.',
     year: '2025',
+    started: '2025-03',
     role: 'design + build',
     stack: ['Next.js 15', 'tRPC', 'Prisma', 'AWS Bedrock', 'CDK'],
     accent: 'cyan',
+    geometry: 'torus',
     keyword: ['Language', 'To SQL'],
     summary: 'AI SQL assistant — type a question, get a query, get an answer.',
     problem: 'Non-technical folks on data teams wait days for analyst bandwidth to answer one-line questions. Existing text-to-SQL tools either hallucinate joins or demand perfect prompts.',
@@ -95,9 +107,11 @@ export const projects: Project[] = [
     title: 'Eldridge Morgan',
     tagline: 'a brand site that doesn\'t look like every other brand site.',
     year: '2025',
+    started: '2025-08',
     role: 'design + build',
     stack: ['Next.js 15', 'Payload CMS', 'Tailwind'],
     accent: 'hot',
+    geometry: 'box',
     keyword: ['Editorial', 'Brand Site'],
     summary: 'Marketing site for a boutique firm. Editorial layout, CMS-driven, quiet motion.',
     problem: 'Existing site was a generic template. Leadership wanted something that matched the quality of the work — editorial, deliberate, not AI-template-slop.',
@@ -110,9 +124,11 @@ export const projects: Project[] = [
     title: 'Write-Ahead Log',
     tagline: 'a tiny durable log, because databases have all the fun.',
     year: '2024',
+    started: '2024-09',
     role: 'systems side project',
     stack: ['Python', 'pytest', 'fsync'],
     accent: 'lime',
+    geometry: 'cone',
     keyword: ['Durable', 'By Design'],
     summary: 'A from-scratch WAL: append-only log, crash recovery, the whole deal.',
     problem: 'I wanted to actually understand durability. Reading papers only gets you so far — at some point you have to call `fsync` yourself.',
